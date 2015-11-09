@@ -9,10 +9,6 @@ local item_value = os.getenv('item_value')
 local downloaded = {}
 local addedtolist = {}
 
-for ignore in io.open("ignore-list", "r"):lines() do
-  downloaded[ignore] = true
-end
-
 read_file = function(file)
   if file then
     local f = assert(io.open(file))

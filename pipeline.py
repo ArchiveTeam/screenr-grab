@@ -57,7 +57,7 @@ if not WGET_LUA:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = "20151109.01"
+VERSION = "20151110.01"
 USER_AGENT = 'ArchiveTeam'
 TRACKER_ID = 'screenr'
 TRACKER_HOST = 'tracker.archiveteam.org'
@@ -194,7 +194,7 @@ class WgetArgs(object):
         item['item_type'] = item_type
         item['item_value'] = item_value
         
-        assert item_type in ('az21792', 'screenrcdn', 'rackspacecloud')
+        assert item_type in ('az21792', 'screenrcdn', 'rackspacecloud', 'screenr')
         assert item_sort in ('images', 'video')
 
         if item_type == 'az21792' and item_sort == 'images':
@@ -212,6 +212,9 @@ class WgetArgs(object):
             wget_args.append('http://c0203141.cdn.cloudfiles.rackspacecloud.com/{0}.jpg'.format(item_value))
         elif item_type == 'rackspacecloud' and item_sort == 'video':
             wget_args.append('http://c0203131.cdn.cloudfiles.rackspacecloud.com/{0}.mp4'.format(item_value))
+        elif item_type == 'screenr' and item_sort == 'video':
+            wget_args.append('http://www.screenr.com/{0}'.format(item_value))
+            wget_args.append('http://www.screenr.com/embed/{0}'.format(item_value))
         else:
             raise Exception('Unknown item')
         

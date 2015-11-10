@@ -9,6 +9,10 @@ local item_value = os.getenv('item_value')
 local downloaded = {}
 local addedtolist = {}
 
+for ignore in io.open("ignore-list", "r"):lines() do
+  downloaded[ignore] = true
+end
+
 read_file = function(file)
   if file then
     local f = assert(io.open(file))
@@ -23,9 +27,13 @@ end
 wget.callbacks.download_child_p = function(urlpos, parent, depth, start_url_parsed, iri, verdict, reason)
   local url = urlpos["url"]["url"]
   local html = urlpos["link_expect_html"]
-
-  -- coming
   
+  if (downloaded[url] ~= true and addedtolist[url] ~= true) then
+    addedtolist[url] = true
+    return true
+  else
+    return false
+  end
 end
 
 
@@ -37,7 +45,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
   
   local function check(urla)
     local url = string.match(urla, "^([^#]+)")
-    if (downloaded[url] ~= true and addedtolist[url] ~= true) then
+    if (downloaded[url] ~= true and addedtolist[url] ~= true) and string.match(url, item_value) then
       if string.match(url, "&amp;") then
         table.insert(urls, { url=string.gsub(url, "&amp;", "&") })
         addedtolist[url] = true
@@ -61,8 +69,19 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     end
   end
   
-  -- coming
-  
+  if item_type == 'screenr' then
+    html = read_file(file)
+    for newurl in string.gmatch(html, '([^"]+)') do
+      checknewurl(newurl)
+    end
+    for newurl in string.gmatch(html, "([^']+)") do
+      checknewurl(newurl)
+    end
+    for newurl in string.gmatch(html, ">([^<]+)") do
+      checknewurl(newurl)
+    end
+  end
+
   return urls
 end
   
